@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MapQuest</string>
+    
+    <string name="action_settings">Settings</string>
+    <string name="action_today">Today</string>
+    <string name="action_map">Map</string>
+    <string name="action_routing">Routing</string>
+    <string name="action_add">Add Event</string>
+    
+    <string name="menu_save">Save</string>
+    <string name="menu_cancel">Cancel</string>
+    
+    <string name="title_map">Map</string>
+    <string name="title_eventlist">Event List</string>
+
+</resources>
