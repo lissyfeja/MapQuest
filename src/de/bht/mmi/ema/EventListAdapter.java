@@ -5,17 +5,18 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersAdapter;
 
 import de.bht.mmi.ema.data.CalendarEvent;
-
+ 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.ArrayAdapter; 
 import android.widget.TextView;
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.content.Context; 
 
 public class EventListAdapter extends ArrayAdapter<CalendarEvent> implements StickyListHeadersAdapter {
 	@SuppressLint("SimpleDateFormat")
@@ -77,6 +78,7 @@ public class EventListAdapter extends ArrayAdapter<CalendarEvent> implements Sti
 			holder.title = (TextView) convertView.findViewById(R.id.item_title);
 			holder.time = (TextView) convertView.findViewById(R.id.item_time);
 			holder.description = (TextView) convertView.findViewById(R.id.item_description);
+			holder.location = (TextView) convertView.findViewById(R.id.item_location);
 			convertView.setTag(holder);
 		} else {
 			holder = (ItemViewHolder) convertView.getTag();
@@ -88,6 +90,7 @@ public class EventListAdapter extends ArrayAdapter<CalendarEvent> implements Sti
 		holder.time.setText("Start: " + Long.toString(event.getDtStart())
 				+ "   End: " + Long.toString(event.getDtEnd()));
 		holder.description.setText(event.getDescription());
+		holder.location.setText(event.getLocation());
 		return convertView;
 	}
 
@@ -133,6 +136,7 @@ public class EventListAdapter extends ArrayAdapter<CalendarEvent> implements Sti
 		public TextView title;
 		public TextView time;
 		public TextView description;
+		public TextView location;
 	}
 	
 	private class HeaderViewHolder {

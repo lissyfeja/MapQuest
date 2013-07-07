@@ -2,30 +2,39 @@ package de.bht.mmi.ema;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import com.google.android.gms.location.Geofence;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 
 import de.bht.mmi.ema.data.CalendarEvent;
 import de.bht.mmi.ema.data.CalendarProviderWrapper;
 import de.bht.mmi.ema.data.CursorTransformer;
+import de.bht.mmi.ema.SimpleGeofence;
 
 import android.app.ActionBar;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,16 +49,30 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 	private GoogleMap mMap;
 	private MenuItem mMenuItemRouting;
 	private MenuItem mMenuItemMap;
+	private SimpleGeofence mGeofence;
+	List<SimpleGeofence> mGeofenceList;
+	//private SimpleGeofenceStore mGeofenceStorage;
+	
 	
 	private boolean mRoutingMode;
 	private List<CalendarEvent> mEvents;
 	private Geocoder mGeocoder;
 	private Marker mNewEventMarker;
+	
+	private static final long SECONDS_PER_HOUR = 60;
+    private static final long MILLISECONDS_PER_SECOND = 1000;
+    private static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
+    private static final long GEOFENCE_EXPIRATION_TIME =
+            GEOFENCE_EXPIRATION_IN_HOURS *
+            SECONDS_PER_HOUR *
+            MILLISECONDS_PER_SECOND;
 
 	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		
+		mGeofenceList = new ArrayList<SimpleGeofence>();
 		super.onCreate(savedInstanceState);
 
 		this.mActivity = (MainActivity) getActivity();
@@ -142,7 +165,7 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 			mMenuItemRouting.setVisible(false);
 			mMenuItemMap.setVisible(true);
 			mRoutingMode = true;
-			// TODO: show routing
+			createRoute();
 			return true;
 		case R.id.action_map_map:
 			mMenuItemRouting.setVisible(true);
@@ -156,10 +179,51 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 		}
 		return false;
 	}
+	
+	 public void createGeofences(double lat, double lon, float rad) {
+		 mGeofence = new SimpleGeofence(
+                "1",
+                lat,
+                lon,
+                rad,
+                GEOFENCE_EXPIRATION_TIME,
+                Geofence.GEOFENCE_TRANSITION_ENTER);
+	      mGeofenceList.add(mGeofence);
+	      CircleOptions mCircleOptions = new CircleOptions();
+	      mCircleOptions.center(new LatLng(lat,lon));
+	      mCircleOptions.radius(100);
+	      mCircleOptions.strokeColor(Color.YELLOW);
+	      mCircleOptions.fillColor(Color.argb(40, 50, 60, 70));
+	      mMap.addCircle(mCircleOptions);
+	      
+		 
+    }
+	 
+	 public void createRoute(){
+		// for(int i = 0; i< mGeofenceList.size(); i++){
+			 SimpleGeofence start = mGeofenceList.get(0);
+			 SimpleGeofence end = mGeofenceList.get(1);
+			 final Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse("http://maps.google.com/maps?" + "saddr="+ start.getLatitude() 
+					 + "," + start.getLongitude() + "&daddr=" + end.getLatitude() + "," + end.getLongitude()));
+					 intent.setClassName("com.google.android.apps.maps","com.google.android.maps.MapsActivity");
+					 startActivity(intent);
+					 
+			 
+		// }
+	 }
+	 
+	 
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		return CalendarProviderWrapper.getTodaysEvents(mActivity);
+		//Calendar cal = Calendar.getInstance();
+		//cal.set(Calendar.DAY_OF_YEAR, cal.get(Calendar.DAY_OF_YEAR) - 10);
+		//long from = cal.getTimeInMillis();
+		//cal.set(Calendar.DAY_OF_YEAR, cal.get(Calendar.DAY_OF_YEAR) + 50);
+		//long to = cal.getTimeInMillis();
+
+		//return CalendarProviderWrapper.getEventsFromTo(mActivity, from, to);
 	}
 
 	@Override
@@ -173,13 +237,17 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 				}
 			}
 		}
+		
 		mEvents = events;
+
 		
 		
 		for (CalendarEvent event : mEvents) {
+			
 			List<Address> addresses = null;
 			try {
 				addresses = mGeocoder.getFromLocationName(event.getLocation(), 3);
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -187,10 +255,16 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 			if (addresses != null && addresses.size() > 0) {
 				Marker marker = mMap.addMarker(new MarkerOptions()
 				.position(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()))
+				.snippet(event.getLocation())
 				.title(event.getTitle()));
+				marker.showInfoWindow();
+				
+				createGeofences(addresses.get(0).getLatitude(), addresses.get(0).getLongitude(), 300);
 			}
 			
 		}
+		
+		
 	}
 
 	@Override

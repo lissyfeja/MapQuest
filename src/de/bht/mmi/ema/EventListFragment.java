@@ -143,6 +143,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
 
 		List<CalendarEvent> events = new ArrayList<CalendarEvent>();
 		if (cursor.getCount() > 0) {
+			Log.d("MapQuest", "onLoadFinished()!!!!!!===0");
 			while (cursor.moveToNext()) {
 				CalendarEvent event = CursorTransformer.cursorToEvent(cursor);
 				if (event != null) {
@@ -166,6 +167,7 @@ public class EventListFragment extends Fragment implements LoaderManager.LoaderC
         intent.putExtra(EditEventActivity.INTENT_EDITEVENT, json);
         startActivity(intent);
 	}
+	
 
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {

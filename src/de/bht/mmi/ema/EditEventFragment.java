@@ -8,9 +8,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 
-public class EditEventFragment extends Fragment implements OnClickListener {
+public class EditEventFragment extends Fragment implements OnClickListener{
 	private EditEventActivity mActivity;
 	private ActionBar mActionBar;
 	public CalendarEvent mEvent;
@@ -79,6 +80,7 @@ public class EditEventFragment extends Fragment implements OnClickListener {
 			break;
 		}
 	}
+
 	
 	/**
 	 * Save changes
