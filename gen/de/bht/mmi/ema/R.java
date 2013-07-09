@@ -183,37 +183,59 @@ containing a value of this type.
         public static final int ic_action_add=0x7f020018;
         public static final int ic_action_cancel=0x7f020019;
         public static final int ic_action_map=0x7f02001a;
-        public static final int ic_action_routing=0x7f02001b;
-        public static final int ic_action_save=0x7f02001c;
-        public static final int ic_action_today=0x7f02001d;
-        public static final int ic_launcher=0x7f02001e;
-        public static final int list_focused_mapquest=0x7f02001f;
-        public static final int list_section_divider_holo_light=0x7f020020;
-        public static final int pressed_background_mapquest=0x7f020021;
-        public static final int selectable_background_mapquest=0x7f020022;
+        public static final int ic_action_map_light=0x7f02001b;
+        public static final int ic_action_routing=0x7f02001c;
+        public static final int ic_action_save=0x7f02001d;
+        public static final int ic_action_today=0x7f02001e;
+        public static final int ic_launcher=0x7f02001f;
+        public static final int list_focused_mapquest=0x7f020020;
+        public static final int list_section_divider_holo_light=0x7f020021;
+        public static final int pressed_background_mapquest=0x7f020022;
+        public static final int selectable_background_mapquest=0x7f020023;
+        public static final int spinner_background_holo=0x7f020024;
+        public static final int spinner_default_holo_light=0x7f020025;
+        public static final int spinner_disabled_holo_light=0x7f020026;
+        public static final int spinner_focused_holo_light=0x7f020027;
+        public static final int spinner_pressed_holo_light=0x7f020028;
     }
     public static final class id {
-        public static final int action_add=0x7f050010;
-        public static final int action_map_map=0x7f050014;
-        public static final int action_map_routing=0x7f050013;
-        public static final int action_settings=0x7f050012;
-        public static final int action_today=0x7f050011;
+        public static final int action_add=0x7f050020;
+        public static final int action_map_map=0x7f050024;
+        public static final int action_map_routing=0x7f050023;
+        public static final int action_settings=0x7f050022;
+        public static final int action_today=0x7f050021;
         public static final int actionbar_cancel=0x7f050005;
         public static final int actionbar_save=0x7f050006;
+        public static final int calendar_spinner_accountname=0x7f050018;
+        public static final int calendar_spinner_color=0x7f050016;
+        public static final int calendar_spinner_name=0x7f050017;
         public static final int container=0x7f050007;
-        public static final int header_text=0x7f050009;
+        public static final int edit_calendar=0x7f05000a;
+        public static final int edit_calendar_background=0x7f050009;
+        public static final int edit_from_date=0x7f050011;
+        public static final int edit_from_time=0x7f050012;
+        public static final int edit_location=0x7f05000c;
+        public static final int edit_location_map=0x7f05000d;
+        public static final int edit_map_backgroudn=0x7f05000e;
+        public static final int edit_notes=0x7f050015;
+        public static final int edit_scrollview=0x7f050008;
+        public static final int edit_title=0x7f05000b;
+        public static final int edit_to_date=0x7f050013;
+        public static final int edit_to_time=0x7f050014;
+        public static final int header_text=0x7f05001a;
         public static final int hybrid=0x7f050004;
-        public static final int item_color=0x7f05000a;
-        public static final int item_description=0x7f05000d;
-        public static final int item_location=0x7f05000e;
-        public static final int item_time=0x7f05000c;
-        public static final int item_title=0x7f05000b;
-        public static final int list=0x7f050008;
+        public static final int item_color=0x7f05001b;
+        public static final int item_description=0x7f05001e;
+        public static final int item_location=0x7f05001f;
+        public static final int item_time=0x7f05001d;
+        public static final int item_title=0x7f05001c;
+        public static final int list=0x7f050019;
         public static final int mapview=0x7f05000f;
         public static final int none=0x7f050000;
         public static final int normal=0x7f050001;
         public static final int satellite=0x7f050002;
         public static final int terrain=0x7f050003;
+        public static final int transparent_image=0x7f050010;
     }
     public static final class layout {
         public static final int actionbar_btn_cancel=0x7f030000;
@@ -222,10 +244,11 @@ containing a value of this type.
         public static final int activity_editevent=0x7f030003;
         public static final int activity_main=0x7f030004;
         public static final int fragment_editevent=0x7f030005;
-        public static final int fragment_list=0x7f030006;
-        public static final int fragment_list_header=0x7f030007;
-        public static final int fragment_list_item=0x7f030008;
-        public static final int fragment_map=0x7f030009;
+        public static final int fragment_editevent_calendarspinner_item=0x7f030006;
+        public static final int fragment_list=0x7f030007;
+        public static final int fragment_list_header=0x7f030008;
+        public static final int fragment_list_item=0x7f030009;
+        public static final int fragment_map=0x7f03000a;
     }
     public static final class menu {
         public static final int menu_list=0x7f090000;
@@ -302,6 +325,11 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f06000e;
+        public static final int edit_from=0x7f060021;
+        public static final int edit_location=0x7f060020;
+        public static final int edit_notes=0x7f060023;
+        public static final int edit_title=0x7f06001f;
+        public static final int edit_to=0x7f060022;
         /**  Location client code resources (prefix with location_client) 
 
         Begin strings for location.reporting
