@@ -21,18 +21,23 @@ public class CalendarProviderWrapper {
 	
 	
 
-	public static List<MQCalendar> getCalendars(final Context context) {
-		List<MQCalendar> calendars = new ArrayList<MQCalendar>();
-		Cursor cursor = context.getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, MQCalendar.FIELDS, null, null, null);
-		if (cursor.getCount() > 0) {
-			while (cursor.moveToNext()) {
-				MQCalendar calendar = CursorTransformer.cursorToCalendar(cursor);
-				if (calendar != null) {
-					calendars.add(calendar);
-				}
-			}
-		}
-		return calendars;
+//	public static List<MQCalendar> getCalendars(final Context context) {
+//		List<MQCalendar> calendars = new ArrayList<MQCalendar>();
+//		Cursor cursor = context.getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, MQCalendar.FIELDS, null, null, null);
+//		if (cursor.getCount() > 0) {
+//			while (cursor.moveToNext()) {
+//				MQCalendar calendar = CursorTransformer.cursorToCalendar(cursor);
+//				if (calendar != null) {
+//					calendars.add(calendar);
+//				}
+//			}
+//		}
+//		return calendars;
+//	}
+	
+	public static CursorLoader getAllCalendars(final Context context) {
+		String sortOrder = CalendarContract.Calendars.ACCOUNT_NAME + " ASC";
+		return new CursorLoader(context, CalendarContract.Calendars.CONTENT_URI, MQCalendar.FIELDS, null, null, sortOrder);
 	}
 	
 	/**
@@ -79,7 +84,7 @@ public class CalendarProviderWrapper {
 			s += " AND " + selection;
 		}
 		String sortOrder = Events.DTSTART + " ASC";
-		return new CursorLoader(context, CalendarContract.Events.CONTENT_URI, CalendarEvent.FIELDS, s, selectionArgs, sortOrder);
+		return new CursorLoader(context, CalendarContract.Events.CONTENT_URI, MQCalendarEvent.FIELDS, s, selectionArgs, sortOrder);
 	}
 	
 	

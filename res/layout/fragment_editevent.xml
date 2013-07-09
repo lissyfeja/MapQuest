@@ -1,7 +1,180 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/edit_scrollview"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical" >
+    android:layout_height="match_parent"
+    android:fillViewport="true" >
 
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/edit_calendar_background"
+            android:layout_width="match_parent"
+            android:layout_height="96dp"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp" >
+
+            <Spinner
+                android:id="@+id/edit_calendar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp" >
+
+            <EditText
+                android:id="@+id/edit_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/edit_title"
+                android:inputType="textMultiLine"
+                android:minHeight="48dp"
+                android:minLines="1" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <EditText
+                    android:id="@+id/edit_location"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/edit_location"
+                    android:minHeight="48dp"
+                    android:minLines="1" />
+
+                <ImageButton
+                    android:id="@+id/edit_location_map"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/selectable_background_mapquest"
+                    android:gravity="center_vertical"
+                    android:src="@drawable/ic_action_map_light" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/edit_map_backgroudn"
+                android:layout_width="match_parent"
+                android:layout_height="192dp"
+                android:visibility="gone" >
+
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/mapview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:apiKey="AIzaSyDlwLCWYAEwtBj6uS7t1h1PTI0idhWEzGw"
+                    android:paddingTop="8dp" />
+
+                <!-- This view is neccessary for intercepting touchevents from the mapview -->
+                <ImageView
+                    android:id="@+id/transparent_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="#00000000" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="-8dp"
+                android:gravity="bottom"
+                android:paddingLeft="12dp"
+                android:paddingTop="8dp"
+                android:text="@string/edit_from"
+                android:textAllCaps="true"
+                android:textColor="#88000000"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/edit_from_date"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/spinner_background_holo"
+                    android:gravity="start|center_vertical"
+                    android:paddingLeft="12dp"
+                    android:text="123"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/edit_from_time"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/spinner_background_holo"
+                    android:gravity="start|center_vertical"
+                    android:paddingLeft="12dp"
+                    android:text="456"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="-8dp"
+                android:gravity="bottom"
+                android:paddingLeft="12dp"
+                android:text="@string/edit_to"
+                android:textAllCaps="true"
+                android:textColor="#88000000"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/edit_to_date"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/spinner_background_holo"
+                    android:gravity="start|center_vertical"
+                    android:paddingLeft="12dp"
+                    android:text="123"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/edit_to_time"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/spinner_background_holo"
+                    android:gravity="start|center_vertical"
+                    android:paddingLeft="12dp"
+                    android:text="456"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/edit_notes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/edit_notes"
+                android:inputType="textMultiLine"
+                android:minHeight="48dp"
+                android:minLines="1" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

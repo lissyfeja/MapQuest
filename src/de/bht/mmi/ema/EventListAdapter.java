@@ -3,13 +3,8 @@ package de.bht.mmi.ema;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
-
-
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersAdapter;
-
-import de.bht.mmi.ema.data.CalendarEvent;
- 
+import de.bht.mmi.ema.data.MQCalendarEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +13,9 @@ import android.widget.TextView;
 import android.annotation.SuppressLint;
 import android.content.Context; 
 
-public class EventListAdapter extends ArrayAdapter<CalendarEvent> implements StickyListHeadersAdapter {
-	@SuppressLint("SimpleDateFormat")
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd. MMMM y");
-
+public class EventListAdapter extends ArrayAdapter<MQCalendarEvent> implements StickyListHeadersAdapter {
 	private Context mContext;
-	private List<CalendarEvent> mEvents;
+	private List<MQCalendarEvent> mEvents;
 	private LayoutInflater mInflater;
 	
 	
@@ -33,10 +25,10 @@ public class EventListAdapter extends ArrayAdapter<CalendarEvent> implements Sti
 		this.mContext = context;
 		this.mInflater = LayoutInflater.from(context);
 	}
-
 	
 	
-	public void setEvents(List<CalendarEvent> events) {
+	
+	public void setEvents(List<MQCalendarEvent> events) {
 		this.mEvents = events;
 		this.notifyDataSetChanged();
 	}
@@ -47,7 +39,7 @@ public class EventListAdapter extends ArrayAdapter<CalendarEvent> implements Sti
 	}
 
 	@Override
-	public CalendarEvent getItem(int position) {
+	public MQCalendarEvent getItem(int position) {
 		return (mEvents == null) ? null : mEvents.get(position);
 	}
 
@@ -56,15 +48,16 @@ public class EventListAdapter extends ArrayAdapter<CalendarEvent> implements Sti
 		return position;
 	}
 	
-	public int getPosition(long headerText) {
-		// TODO: get the position of the item whose dtStart date has the minimum difference to the given headerText
-		// TODO: or: just set the events of the adapter to the starting events and than get the min diff to today
-		for (int i = 0; i < mEvents.size(); i++) {
-			if (mEvents.get(i).getDtStart() == headerText) {
-				return i;
+	public int getPosition(long time) {
+		int pos = 0;
+		MQCalendarEvent minEvent = mEvents.get(0);
+		for (int i = 1; i < mEvents.size(); i++) {
+			if (Math.abs(mEvents.get(i).getDtStart() - time) < Math.abs(minEvent.getDtStart() - time)) {
+				pos = i;
+				minEvent = mEvents.get(i);
 			}
 		}
-		return 0;
+		return pos;
 	}
 
 	@Override
@@ -84,11 +77,10 @@ public class EventListAdapter extends ArrayAdapter<CalendarEvent> implements Sti
 			holder = (ItemViewHolder) convertView.getTag();
 		}
 		
-		CalendarEvent event = mEvents.get(position);
+		MQCalendarEvent event = mEvents.get(position);
 		holder.color.setBackgroundColor(event.getCalendarColor());
 		holder.title.setText(event.getTitle());
-		holder.time.setText("Start: " + Long.toString(event.getDtStart())
-				+ "   End: " + Long.toString(event.getDtEnd()));
+		holder.time.setText(MQCalendarEvent.DATE_FORMAT_TIME.format(event.getDtStart()) + " - " + MQCalendarEvent.DATE_FORMAT_TIME.format(event.getDtEnd()));
 		holder.description.setText(event.getDescription());
 		holder.location.setText(event.getLocation());
 		return convertView;
@@ -108,10 +100,7 @@ public class EventListAdapter extends ArrayAdapter<CalendarEvent> implements Sti
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(mEvents.get(position).getDtStart());
-		String date = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
-		date += ", "+  dateFormat.format(calendar.getTime());
-		holder.text.setText(date);
-//		holder.text.setText(Long.toString(mEvents.get(position).getDtStart()));
+		holder.text.setText(MQCalendarEvent.DATE_FORMAT.format(calendar.getTime()));
 		
 		return convertView;
 	}

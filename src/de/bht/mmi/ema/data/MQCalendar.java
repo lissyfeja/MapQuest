@@ -4,6 +4,7 @@ import android.provider.CalendarContract.Calendars;
 
 public class MQCalendar {
 	public static final String[] FIELDS = {
+		Calendars._ID,
 		Calendars.ACCOUNT_NAME,
 		Calendars.NAME,
 		Calendars.CALENDAR_DISPLAY_NAME,
@@ -11,6 +12,7 @@ public class MQCalendar {
 		Calendars.VISIBLE
 		};
 	
+	private String calendarID;
 	private String accountName;
 	private String name;
 	private String displayName;
@@ -32,6 +34,14 @@ public class MQCalendar {
 	}
 	
 	
+	
+	public void setCalendarID(String calendarID) {
+		this.calendarID = calendarID;
+	}
+
+	public String getCalendarID() {
+		return calendarID;
+	}
 	
 	public void setAccountName(String accountName) {
 		this.accountName = accountName;

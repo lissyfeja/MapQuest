@@ -1,18 +1,27 @@
 package de.bht.mmi.ema.data;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.provider.CalendarContract.Events;
 
-public class CalendarEvent {
+@SuppressLint("SimpleDateFormat")
+public class MQCalendarEvent {
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEEE, dd. MMMM y");
+	public static final SimpleDateFormat DATE_FORMAT_SHORT = new SimpleDateFormat("EE, dd. MMM y");
+	public static final SimpleDateFormat DATE_FORMAT_TIME = new SimpleDateFormat("HH:mm");
+	
 	public static final String[] FIELDS = {
+		Events.CALENDAR_ID,
 		Events.CALENDAR_COLOR,
 		Events.CALENDAR_DISPLAY_NAME,
 		Events.TITLE,
@@ -22,7 +31,8 @@ public class CalendarEvent {
 		Events.EVENT_LOCATION,
 		Events.HAS_ALARM
 		};
-
+	
+	private String calendarID;
 	private int calendarColor;
 	private String calendarDisplayName;
 	private String title;
@@ -34,11 +44,19 @@ public class CalendarEvent {
 
 	
 	
-	public CalendarEvent() {
+	public MQCalendarEvent() {
 
 	}
-
 	
+	
+	
+	public void setCalendarID(String calendarID) {
+		this.calendarID = calendarID;
+	}
+	
+	public String getCalendarID() {
+		return calendarID;
+	}
 	
 	public void setCalendarColor(int calendarColor) {
 		this.calendarColor = calendarColor;
@@ -117,6 +135,43 @@ public class CalendarEvent {
 
 	public boolean isHasAlarm() {
 		return hasAlarm;
+	}
+	
+	/**
+	 * Gets a list of maximum three possible addresses to the events location.
+	 * @param geocoder
+	 * @return may return an empty list
+	 */
+	public List<Address> getAddresses(Context context) {
+		Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+		 
+		List<Address> addresses = new ArrayList<Address>();
+		if (this.location != null && !this.location.equals("")) {
+			try {
+				addresses = geocoder.getFromLocationName(this.location, 3);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return addresses;
+	}
+	
+	public String getAddressLine2(Context context) {
+		String line = "";
+		List<Address> addresses = getAddresses(context);
+		if (addresses != null && addresses.size() > 0) {
+			Address add = addresses.get(0);
+			int max = add.getMaxAddressLineIndex();
+			if (max != -1) {
+				for (int i = 0; i < max; i++) {
+					line += add.getAddressLine(i);
+					if (i < max - 1) {
+						line += ", ";
+					}
+				}
+			}
+		}
+		return line;
 	}
 
 }

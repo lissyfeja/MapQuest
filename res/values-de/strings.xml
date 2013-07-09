@@ -15,4 +15,9 @@
     <string name="title_map">Karte</string>
     <string name="title_eventlist">Termine</string>
 
+    <string name="edit_title">Titel</string>
+    <string name="edit_location">Ort</string>
+    <string name="edit_from">Von</string>
+    <string name="edit_to">Bis</string>
+    <string name="edit_notes">Beschreibung</string>
 </resources>

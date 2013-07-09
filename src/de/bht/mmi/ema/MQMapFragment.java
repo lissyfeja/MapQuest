@@ -19,10 +19,10 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 
-import de.bht.mmi.ema.data.CalendarEvent;
+import de.bht.mmi.ema.Geofence.SimpleGeofence;
+import de.bht.mmi.ema.data.MQCalendarEvent;
 import de.bht.mmi.ema.data.CalendarProviderWrapper;
 import de.bht.mmi.ema.data.CursorTransformer;
-import de.bht.mmi.ema.SimpleGeofence;
 
 import android.app.ActionBar;
 import android.content.Intent;
@@ -55,7 +55,7 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 	
 	
 	private boolean mRoutingMode;
-	private List<CalendarEvent> mEvents;
+	private List<MQCalendarEvent> mEvents;
 	private Geocoder mGeocoder;
 	private Marker mNewEventMarker;
 	
@@ -98,9 +98,9 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 				if (marker.getId().equals(mNewEventMarker.getId())) {
 					mNewEventMarker.remove();
 					Intent intent = new Intent(mActivity, EditEventActivity.class);
-					CalendarEvent mEvent = new CalendarEvent();
+					MQCalendarEvent mEvent = new MQCalendarEvent();
 					mEvent.setLocation(mActivity, marker.getPosition());
-					intent.putExtra(EditEventActivity.INTENT_EDITEVENT, new Gson().toJson(mEvent));
+					intent.putExtra(EditEventActivity.INTENT_ADDEVENT, new Gson().toJson(mEvent));
 		            startActivity(intent);
 				} else {
 					mNewEventMarker.remove();
@@ -201,12 +201,12 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 	 
 	 public void createRoute(){
 		// for(int i = 0; i< mGeofenceList.size(); i++){
-			 SimpleGeofence start = mGeofenceList.get(0);
-			 SimpleGeofence end = mGeofenceList.get(1);
-			 final Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse("http://maps.google.com/maps?" + "saddr="+ start.getLatitude() 
-					 + "," + start.getLongitude() + "&daddr=" + end.getLatitude() + "," + end.getLongitude()));
-					 intent.setClassName("com.google.android.apps.maps","com.google.android.maps.MapsActivity");
-					 startActivity(intent);
+		SimpleGeofence start = mGeofenceList.get(0);
+		SimpleGeofence end = mGeofenceList.get(1);
+		final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?" + "saddr=" + start.getLatitude() + ","
+				+ start.getLongitude() + "&daddr=" + end.getLatitude() + "," + end.getLongitude()));
+		intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+//		startActivity(intent);
 					 
 			 
 		// }
@@ -228,29 +228,19 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		List<CalendarEvent> events = new ArrayList<CalendarEvent>();
+		List<MQCalendarEvent> events = new ArrayList<MQCalendarEvent>();
 		if (cursor.getCount() > 0) {
 			while (cursor.moveToNext()) {
-				CalendarEvent event = CursorTransformer.cursorToEvent(cursor);
+				MQCalendarEvent event = CursorTransformer.cursorToEvent(cursor);
 				if (event != null) {
 					events.add(event);
 				}
 			}
 		}
-		
 		mEvents = events;
 
-		
-		
-		for (CalendarEvent event : mEvents) {
-			
-			List<Address> addresses = null;
-			try {
-				addresses = mGeocoder.getFromLocationName(event.getLocation(), 3);
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		for (MQCalendarEvent event : mEvents) {
+			List<Address> addresses = event.getAddresses(mActivity);
 			
 			if (addresses != null && addresses.size() > 0) {
 				Marker marker = mMap.addMarker(new MarkerOptions()
@@ -261,7 +251,6 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 				
 				createGeofences(addresses.get(0).getLatitude(), addresses.get(0).getLongitude(), 300);
 			}
-			
 		}
 		
 		

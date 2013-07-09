@@ -14,5 +14,11 @@
     
     <string name="title_map">Map</string>
     <string name="title_eventlist">Event List</string>
+    
+    <string name="edit_title">Title</string>
+    <string name="edit_location">Location</string>
+    <string name="edit_from">From</string>
+    <string name="edit_to">To</string>
+    <string name="edit_notes">Notes</string>
 
 </resources>
