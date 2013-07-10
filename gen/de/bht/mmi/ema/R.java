@@ -8,6 +8,11 @@
 package de.bht.mmi.ema;
 
 public final class R {
+    public static final class array {
+        public static final int reminder_method_names=0x7f070002;
+        public static final int reminder_times=0x7f070001;
+        public static final int reminder_times_names=0x7f070000;
+    }
     public static final class attr {
         /** <p>Must be a floating point value, such as "<code>1.2</code>".
 <p>This may also be a reference to a resource (in the form
@@ -152,8 +157,8 @@ containing a value of this type.
          screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
     
          */
-        public static final int activity_horizontal_margin=0x7f070000;
-        public static final int activity_vertical_margin=0x7f070001;
+        public static final int activity_horizontal_margin=0x7f080000;
+        public static final int activity_vertical_margin=0x7f080001;
     }
     public static final class drawable {
         public static final int common_signin_btn_icon_dark=0x7f020000;
@@ -182,28 +187,33 @@ containing a value of this type.
         public static final int common_signin_btn_text_pressed_light=0x7f020017;
         public static final int ic_action_add=0x7f020018;
         public static final int ic_action_cancel=0x7f020019;
-        public static final int ic_action_map=0x7f02001a;
-        public static final int ic_action_map_light=0x7f02001b;
-        public static final int ic_action_routing=0x7f02001c;
-        public static final int ic_action_save=0x7f02001d;
-        public static final int ic_action_today=0x7f02001e;
-        public static final int ic_launcher=0x7f02001f;
-        public static final int list_focused_mapquest=0x7f020020;
-        public static final int list_section_divider_holo_light=0x7f020021;
-        public static final int pressed_background_mapquest=0x7f020022;
-        public static final int selectable_background_mapquest=0x7f020023;
-        public static final int spinner_background_holo=0x7f020024;
-        public static final int spinner_default_holo_light=0x7f020025;
-        public static final int spinner_disabled_holo_light=0x7f020026;
-        public static final int spinner_focused_holo_light=0x7f020027;
-        public static final int spinner_pressed_holo_light=0x7f020028;
+        public static final int ic_action_cancel_light=0x7f02001a;
+        public static final int ic_action_map=0x7f02001b;
+        public static final int ic_action_map_light=0x7f02001c;
+        public static final int ic_action_place=0x7f02001d;
+        public static final int ic_action_place_activated=0x7f02001e;
+        public static final int ic_action_routing=0x7f02001f;
+        public static final int ic_action_save=0x7f020020;
+        public static final int ic_action_time=0x7f020021;
+        public static final int ic_action_time_activated=0x7f020022;
+        public static final int ic_action_today=0x7f020023;
+        public static final int ic_launcher=0x7f020024;
+        public static final int list_focused_mapquest=0x7f020025;
+        public static final int list_section_divider_holo_light=0x7f020026;
+        public static final int pressed_background_mapquest=0x7f020027;
+        public static final int selectable_background_mapquest=0x7f020028;
+        public static final int spinner_background_holo=0x7f020029;
+        public static final int spinner_default_holo_light=0x7f02002a;
+        public static final int spinner_disabled_holo_light=0x7f02002b;
+        public static final int spinner_focused_holo_light=0x7f02002c;
+        public static final int spinner_pressed_holo_light=0x7f02002d;
     }
     public static final class id {
-        public static final int action_add=0x7f050020;
-        public static final int action_map_map=0x7f050024;
-        public static final int action_map_routing=0x7f050023;
-        public static final int action_settings=0x7f050022;
-        public static final int action_today=0x7f050021;
+        public static final int action_add=0x7f050027;
+        public static final int action_map_map=0x7f05002b;
+        public static final int action_map_routing=0x7f05002a;
+        public static final int action_settings=0x7f050029;
+        public static final int action_today=0x7f050028;
         public static final int actionbar_cancel=0x7f050005;
         public static final int actionbar_save=0x7f050006;
         public static final int calendar_spinner_accountname=0x7f050018;
@@ -218,18 +228,25 @@ containing a value of this type.
         public static final int edit_location_map=0x7f05000d;
         public static final int edit_map_backgroudn=0x7f05000e;
         public static final int edit_notes=0x7f050015;
+        public static final int edit_reminder_delete=0x7f05001b;
+        public static final int edit_reminder_location=0x7f05001a;
+        public static final int edit_reminder_location_layout=0x7f05001f;
+        public static final int edit_reminder_time=0x7f050019;
+        public static final int edit_reminder_time_layout=0x7f05001c;
+        public static final int edit_reminder_time_method=0x7f05001e;
+        public static final int edit_reminder_time_time=0x7f05001d;
         public static final int edit_scrollview=0x7f050008;
         public static final int edit_title=0x7f05000b;
         public static final int edit_to_date=0x7f050013;
         public static final int edit_to_time=0x7f050014;
-        public static final int header_text=0x7f05001a;
+        public static final int header_text=0x7f050021;
         public static final int hybrid=0x7f050004;
-        public static final int item_color=0x7f05001b;
-        public static final int item_description=0x7f05001e;
-        public static final int item_location=0x7f05001f;
-        public static final int item_time=0x7f05001d;
-        public static final int item_title=0x7f05001c;
-        public static final int list=0x7f050019;
+        public static final int item_color=0x7f050022;
+        public static final int item_description=0x7f050025;
+        public static final int item_location=0x7f050026;
+        public static final int item_time=0x7f050024;
+        public static final int item_title=0x7f050023;
+        public static final int list=0x7f050020;
         public static final int mapview=0x7f05000f;
         public static final int none=0x7f050000;
         public static final int normal=0x7f050001;
@@ -245,14 +262,15 @@ containing a value of this type.
         public static final int activity_main=0x7f030004;
         public static final int fragment_editevent=0x7f030005;
         public static final int fragment_editevent_calendarspinner_item=0x7f030006;
-        public static final int fragment_list=0x7f030007;
-        public static final int fragment_list_header=0x7f030008;
-        public static final int fragment_list_item=0x7f030009;
-        public static final int fragment_map=0x7f03000a;
+        public static final int fragment_editevent_reminder=0x7f030007;
+        public static final int fragment_list=0x7f030008;
+        public static final int fragment_list_header=0x7f030009;
+        public static final int fragment_list_item=0x7f03000a;
+        public static final int fragment_map=0x7f03000b;
     }
     public static final class menu {
-        public static final int menu_list=0x7f090000;
-        public static final int menu_map=0x7f090001;
+        public static final int menu_list=0x7f0a0000;
+        public static final int menu_map=0x7f0a0001;
     }
     public static final class string {
         public static final int action_add=0x7f06001a;
@@ -328,6 +346,7 @@ containing a value of this type.
         public static final int edit_from=0x7f060021;
         public static final int edit_location=0x7f060020;
         public static final int edit_notes=0x7f060023;
+        public static final int edit_reminder=0x7f060024;
         public static final int edit_title=0x7f06001f;
         public static final int edit_to=0x7f060022;
         /**  Location client code resources (prefix with location_client) 
@@ -343,6 +362,16 @@ containing a value of this type.
         public static final int location_client_ulr_inactive_unknown_restriction=0x7f060014;
         public static final int menu_cancel=0x7f06001c;
         public static final int menu_save=0x7f06001b;
+        public static final int reminder_0=0x7f060025;
+        public static final int reminder_10=0x7f060027;
+        public static final int reminder_120=0x7f06002c;
+        public static final int reminder_15=0x7f060028;
+        public static final int reminder_30=0x7f060029;
+        public static final int reminder_45=0x7f06002a;
+        public static final int reminder_5=0x7f060026;
+        public static final int reminder_60=0x7f06002b;
+        public static final int reminder_alert=0x7f06002d;
+        public static final int reminder_email=0x7f06002e;
         public static final int title_eventlist=0x7f06001e;
         public static final int title_map=0x7f06001d;
     }
@@ -368,11 +397,11 @@ containing a value of this type.
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f080000;
+        public static final int AppBaseTheme=0x7f090000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f080001;
+        public static final int AppTheme=0x7f090001;
     }
     public static final class styleable {
         /** Attributes that can be used with a MapAttrs.
