@@ -36,11 +36,10 @@ public class ProviderWrapper {
 				TimeZone timeZone = TimeZone.getDefault();
 				values.put(Events.EVENT_TIMEZONE, timeZone.getID());
 				
-				Uri uri = context.getContentResolver().insert(Events.CONTENT_URI, values);
+				// new event has no id
+				values.remove(Events._ID);
 				
-				if (uri != null) {
-					startAutomaticSync();
-				}
+				Uri uri = context.getContentResolver().insert(Events.CONTENT_URI, values);
 			}
 		}).start();
 	}
@@ -56,10 +55,6 @@ public class ProviderWrapper {
 				Uri updateUri = ContentUris.withAppendedId(Events.CONTENT_URI, event.getID());
 				
 				int rows = context.getContentResolver().update(updateUri, values, null, null);
-				
-				if (rows > 0) {
-					startAutomaticSync();
-				}
 			}
 		}).start();
 	}
@@ -73,18 +68,17 @@ public class ProviderWrapper {
 				Uri deleteUri = ContentUris.withAppendedId(Events.CONTENT_URI, event.getID());
 				
 				int rows = context.getContentResolver().delete(deleteUri, null, null);
-				
-				if (rows > 0) {
-					startAutomaticSync();
-				}
 			}
 		}).start();
 	}
 	
-	private static void startAutomaticSync() {
-//		Bundle extras = new Bundle();
-//		extras.putBoolean(ContentResolver.SYNC.SYNC_EXTRAS_MANUAL, true);
-//		ContentResolver.requestSync(null, CalendarContract.Calendars.CONTENT_URI.getAuthority(), extras);
+	/**
+	 * May be called from a Synchronize-button in the menu
+	 */
+	public static void startManualSync() {
+		Bundle extras = new Bundle();
+		extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+		ContentResolver.requestSync(null, CalendarContract.Calendars.CONTENT_URI.getAuthority(), extras);
 	}
 	
 	

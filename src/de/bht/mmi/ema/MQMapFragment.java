@@ -165,7 +165,12 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 			mMenuItemRouting.setVisible(false);
 			mMenuItemMap.setVisible(true);
 			mRoutingMode = true;
-			createRoute();
+			
+			// TODO: show our own position
+			// TODO: show routes from our position to first event to second event to third...
+			// TODO: (only if we have time) show split actionbar like in concept
+			
+//			createRoute();
 			return true;
 		case R.id.action_map_map:
 			mMenuItemRouting.setVisible(true);
@@ -206,7 +211,7 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 		final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?" + "saddr=" + start.getLatitude() + ","
 				+ start.getLongitude() + "&daddr=" + end.getLatitude() + "," + end.getLongitude()));
 		intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-//		startActivity(intent);
+		startActivity(intent);
 					 
 			 
 		// }
@@ -217,13 +222,6 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		return CalendarProviderWrapper.getTodaysEvents(mActivity);
-		//Calendar cal = Calendar.getInstance();
-		//cal.set(Calendar.DAY_OF_YEAR, cal.get(Calendar.DAY_OF_YEAR) - 10);
-		//long from = cal.getTimeInMillis();
-		//cal.set(Calendar.DAY_OF_YEAR, cal.get(Calendar.DAY_OF_YEAR) + 50);
-		//long to = cal.getTimeInMillis();
-
-		//return CalendarProviderWrapper.getEventsFromTo(mActivity, from, to);
 	}
 
 	@Override
