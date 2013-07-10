@@ -1,7 +1,10 @@
 package de.bht.mmi.ema.data;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.provider.CalendarContract.Calendars;
 
+@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class MQCalendar {
 	public static final String[] FIELDS = {
 		Calendars._ID,
@@ -12,7 +15,7 @@ public class MQCalendar {
 		Calendars.VISIBLE
 		};
 	
-	private String calendarID;
+	private long calendarID;
 	private String accountName;
 	private String name;
 	private String displayName;
@@ -35,11 +38,11 @@ public class MQCalendar {
 	
 	
 	
-	public void setCalendarID(String calendarID) {
+	public void setCalendarID(long calendarID) {
 		this.calendarID = calendarID;
 	}
 
-	public String getCalendarID() {
+	public long getCalendarID() {
 		return calendarID;
 	}
 	

@@ -9,11 +9,14 @@ import java.util.Locale;
 import com.google.android.gms.maps.model.LatLng;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.Build;
 import android.provider.CalendarContract.Events;
 
+@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 @SuppressLint("SimpleDateFormat")
 public class MQCalendarEvent {
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEEE, dd. MMMM y");
@@ -21,6 +24,7 @@ public class MQCalendarEvent {
 	public static final SimpleDateFormat DATE_FORMAT_TIME = new SimpleDateFormat("HH:mm");
 	
 	public static final String[] FIELDS = {
+		Events._ID,
 		Events.CALENDAR_ID,
 		Events.CALENDAR_COLOR,
 		Events.CALENDAR_DISPLAY_NAME,
@@ -32,7 +36,8 @@ public class MQCalendarEvent {
 		Events.HAS_ALARM
 		};
 	
-	private String calendarID;
+	private long ID;
+	private long calendarID;
 	private int calendarColor;
 	private String calendarDisplayName;
 	private String title;
@@ -50,11 +55,19 @@ public class MQCalendarEvent {
 	
 	
 	
-	public void setCalendarID(String calendarID) {
+	public void setID(long iD) {
+		ID = iD;
+	}
+	
+	public long getID() {
+		return ID;
+	}
+	
+	public void setCalendarID(long calendarID) {
 		this.calendarID = calendarID;
 	}
 	
-	public String getCalendarID() {
+	public long getCalendarID() {
 		return calendarID;
 	}
 	
@@ -120,8 +133,17 @@ public class MQCalendarEvent {
 		}
 		
 		if (addresses != null && addresses.size() > 0) {
-			// TODO: check if getAddressLine() returns the full address
-			this.location = addresses.get(0).getAddressLine(0);
+			Address add = addresses.get(0);
+			int max = add.getMaxAddressLineIndex();
+			this.location = "";
+			if (max != -1) {
+				for (int i = 0; i < max; i++) {
+					this.location += add.getAddressLine(i);
+					if (i < max - 1) {
+						this.location += ", ";
+					}
+				}
+			}
 		}
 	}
 

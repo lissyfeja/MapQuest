@@ -20,7 +20,7 @@ public class CursorTransformer {
 		MQCalendar calendar = null;
 		if (cursor != null) {
 			calendar = new MQCalendar();
-			calendar.setCalendarID(cursor.getString(cursor.getColumnIndex(Calendars._ID)));
+			calendar.setCalendarID(cursor.getLong(cursor.getColumnIndex(Calendars._ID)));
 			calendar.setAccountName(cursor.getString(cursor.getColumnIndex(Calendars.ACCOUNT_NAME)));
 			calendar.setName(cursor.getString(cursor.getColumnIndex(Calendars.NAME)));
 			calendar.setDisplayName(cursor.getString(cursor.getColumnIndex(Calendars.CALENDAR_DISPLAY_NAME)));
@@ -34,7 +34,8 @@ public class CursorTransformer {
 		MQCalendarEvent event = null;
 		if (cursor != null) {
 			event = new MQCalendarEvent();
-			event.setCalendarID(cursor.getString(cursor.getColumnIndex(Events.CALENDAR_ID)));
+			event.setID(cursor.getLong(cursor.getColumnIndex(Events._ID)));
+			event.setCalendarID(cursor.getLong(cursor.getColumnIndex(Events.CALENDAR_ID)));
 			event.setCalendarColor(cursor.getInt(cursor.getColumnIndex(Events.CALENDAR_COLOR)));
 			event.setCalendarDisplayName(cursor.getString(cursor.getColumnIndex(Events.CALENDAR_DISPLAY_NAME)));
 			event.setTitle(cursor.getString(cursor.getColumnIndex(Events.TITLE)));
@@ -49,6 +50,7 @@ public class CursorTransformer {
 	
 	public static ContentValues eventToValues(MQCalendarEvent event) {
 		ContentValues values = new ContentValues();
+		values.put(Events._ID, event.getID());
 		values.put(Events.CALENDAR_ID, event.getCalendarID());
 		values.put(Events.TITLE, event.getTitle());
 		values.put(Events.DESCRIPTION, event.getDescription());

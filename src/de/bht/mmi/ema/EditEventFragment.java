@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
+import de.bht.mmi.ema.Database.ProviderWrapper;
 import de.bht.mmi.ema.Views.CalendarAdapter;
 import de.bht.mmi.ema.data.CalendarProviderWrapper;
 import de.bht.mmi.ema.data.CursorTransformer;
@@ -213,21 +214,22 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 		});
 		
 		final GoogleMap gMap = mMapView.getMap();
-		gMap.setOnMapClickListener(new OnMapClickListener() {
-			@Override
-			public void onMapClick(LatLng latlng) {
-				if (mNewEventMarker != null) {
-					mNewEventMarker.remove();
+		if (gMap != null) {
+			gMap.setOnMapClickListener(new OnMapClickListener() {
+				@Override
+				public void onMapClick(LatLng latlng) {
+					if (mNewEventMarker != null) {
+						mNewEventMarker.remove();
+					}
+
+					mNewEventMarker = gMap.addMarker(new MarkerOptions().icon(null).position(latlng));
+
+					mEvent.setLocation(mActivity, latlng);
+					mEditTextLocation.setText(mEvent.getLocation());
 				}
-				
-				mNewEventMarker = gMap.addMarker(new MarkerOptions()
-				.icon(null)
-				.position(latlng));
-				
-				mEvent.setLocation(mActivity, latlng);
-				mEditTextLocation.setText(mEvent.getLocation());
-			}
-		});
+			});
+		}
+		
 	}
 	
     @Override
@@ -346,10 +348,13 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 	 * @return
 	 */
 	public boolean save() {
+		mEvent.setTitle(mEditTextTitle.getText().toString());
+		mEvent.setDescription(mEditTextNotes.getText().toString());
+		
 		if (mEditMode) {
-			// TODO: update edited event
+			ProviderWrapper.updateEvent(mActivity, mEvent);
 		} else {
-			// TODO: insert new event
+			ProviderWrapper.insertEvent(mActivity, mEvent);
 		}
 		return true;
 	}
@@ -374,8 +379,8 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 					MQCalendar calendar = CursorTransformer.cursorToCalendar(cursor);
 					if (calendar != null) {
 						mCalendars.add(calendar);
-						if (mEvent != null && mEvent.getCalendarID() != null) {
-							if (mEvent.getCalendarID().equals(calendar.getCalendarID())) {
+						if (mEvent != null) {
+							if (mEvent.getCalendarID() == calendar.getCalendarID()) {
 								pos = cursor.getPosition();
 							}
 						}
