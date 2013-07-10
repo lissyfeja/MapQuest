@@ -46,6 +46,8 @@ public class MQCalendarEvent {
 	private long dtEnd;
 	private String location;
 	private boolean hasAlarm;
+	
+	private List<MQReminder> reminders;
 
 	
 	
@@ -178,22 +180,35 @@ public class MQCalendarEvent {
 		return addresses;
 	}
 	
-	public String getAddressLine2(Context context) {
-		String line = "";
-		List<Address> addresses = getAddresses(context);
-		if (addresses != null && addresses.size() > 0) {
-			Address add = addresses.get(0);
-			int max = add.getMaxAddressLineIndex();
-			if (max != -1) {
-				for (int i = 0; i < max; i++) {
-					line += add.getAddressLine(i);
-					if (i < max - 1) {
-						line += ", ";
-					}
-				}
-			}
+//	public String getAddressLine(Context context) {
+//		String line = "";
+//		List<Address> addresses = getAddresses(context);
+//		if (addresses != null && addresses.size() > 0) {
+//			Address add = addresses.get(0);
+//			int max = add.getMaxAddressLineIndex();
+//			if (max != -1) {
+//				for (int i = 0; i < max; i++) {
+//					line += add.getAddressLine(i);
+//					if (i < max - 1) {
+//						line += ", ";
+//					}
+//				}
+//			}
+//		}
+//		return line;
+//	}
+
+	public void setReminders(List<MQReminder> reminders) {
+		if (reminders == null) {
+			this.hasAlarm = false;
+		} else {
+			this.hasAlarm = true;
 		}
-		return line;
+		this.reminders = reminders;
+	}
+	
+	public List<MQReminder> getReminders() {
+		return reminders;
 	}
 
 }

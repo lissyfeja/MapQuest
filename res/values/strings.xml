@@ -20,5 +20,17 @@
     <string name="edit_from">From</string>
     <string name="edit_to">To</string>
     <string name="edit_notes">Notes</string>
+    <string name="edit_reminder">Reminder</string>
 
+    <string name="reminder_0">On start</string>
+    <string name="reminder_5">5 minutes</string>
+    <string name="reminder_10">10 minutes</string>
+    <string name="reminder_15">15 minutes</string>
+    <string name="reminder_30">30 minutes</string>
+    <string name="reminder_45">45 minutes</string>
+    <string name="reminder_60">1 hour</string>
+    <string name="reminder_120">2 hours</string>
+    
+    <string name="reminder_alert">Notification</string>
+    <string name="reminder_email">E-Mail</string>
 </resources>

@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.os.Build;
 import android.provider.CalendarContract.Calendars;
 import android.provider.CalendarContract.Events;
+import android.provider.CalendarContract.Reminders;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class CursorTransformer {
@@ -58,6 +59,27 @@ public class CursorTransformer {
 		values.put(Events.DTEND, event.getDtEnd());
 		values.put(Events.EVENT_LOCATION, event.getLocation());
 		values.put(Events.HAS_ALARM, (event.isHasAlarm()) ? 1 : 0);
+		return values;
+	}
+	
+	public static MQReminder cursorToReminder(final Cursor cursor) {
+		MQReminder reminder = null;
+		if (cursor != null) {
+			reminder = new MQReminder();
+			reminder.setID(cursor.getLong(cursor.getColumnIndex(Reminders._ID)));
+			reminder.setEventID(cursor.getLong(cursor.getColumnIndex(Reminders.EVENT_ID)));
+			reminder.setMethod(cursor.getString(cursor.getColumnIndex(Reminders.METHOD)));
+			reminder.setMinutes(cursor.getInt(cursor.getColumnIndex(Reminders.MINUTES)));
+		}
+		return reminder;
+	}
+	
+	public static ContentValues reminderToValues(MQReminder reminder) {
+		ContentValues values = new ContentValues();
+		values.put(Reminders._ID, reminder.getID());
+		values.put(Reminders.EVENT_ID, reminder.getEventID());
+		values.put(Reminders.METHOD, reminder.getMethod());
+		values.put(Reminders.MINUTES, reminder.getMinutes());
 		return values;
 	}
 

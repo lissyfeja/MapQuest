@@ -1,12 +1,9 @@
 package de.bht.mmi.ema.data;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Build;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Events;
@@ -21,19 +18,6 @@ public class CalendarProviderWrapper {
 	
 	
 
-//	public static List<MQCalendar> getCalendars(final Context context) {
-//		List<MQCalendar> calendars = new ArrayList<MQCalendar>();
-//		Cursor cursor = context.getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, MQCalendar.FIELDS, null, null, null);
-//		if (cursor.getCount() > 0) {
-//			while (cursor.moveToNext()) {
-//				MQCalendar calendar = CursorTransformer.cursorToCalendar(cursor);
-//				if (calendar != null) {
-//					calendars.add(calendar);
-//				}
-//			}
-//		}
-//		return calendars;
-//	}
 	
 	public static CursorLoader getAllCalendars(final Context context) {
 		String sortOrder = CalendarContract.Calendars.ACCOUNT_NAME + " ASC";
@@ -85,6 +69,13 @@ public class CalendarProviderWrapper {
 		}
 		String sortOrder = Events.DTSTART + " ASC";
 		return new CursorLoader(context, CalendarContract.Events.CONTENT_URI, MQCalendarEvent.FIELDS, s, selectionArgs, sortOrder);
+	}
+	
+	public static CursorLoader getReminder(final Context context, long eventID) {
+		String selection = CalendarContract.Reminders.EVENT_ID + "=?";
+		String[] selectionArgs = new String[] { Long.toString(eventID) };
+		
+		return new CursorLoader(context, CalendarContract.Reminders.CONTENT_URI, MQReminder.FIELDS, selection, selectionArgs, null);
 	}
 	
 	

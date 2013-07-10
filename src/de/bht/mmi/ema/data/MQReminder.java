@@ -7,10 +7,12 @@ import android.provider.CalendarContract.Reminders;
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class MQReminder {
 	public static final String[] FIELDS = {
+		Reminders._ID,
 		Reminders.EVENT_ID,
 		Reminders.MINUTES,
 		Reminders.METHOD };
-
+	
+	private long ID;
 	private long eventID;
 	private int minutes;
 	private String method;
@@ -22,6 +24,14 @@ public class MQReminder {
 	}
 	
 	
+
+	public void setID(long iD) {
+		ID = iD;
+	}
+
+	public long getID() {
+		return ID;
+	}
 	
 	public void setEventID(long eventID) {
 		this.eventID = eventID;

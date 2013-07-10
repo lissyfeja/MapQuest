@@ -19,6 +19,7 @@ import de.bht.mmi.ema.data.CalendarProviderWrapper;
 import de.bht.mmi.ema.data.CursorTransformer;
 import de.bht.mmi.ema.data.MQCalendar;
 import de.bht.mmi.ema.data.MQCalendarEvent;
+import de.bht.mmi.ema.data.MQReminder;
 import android.app.ActionBar;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -30,6 +31,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,6 +39,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -73,6 +76,16 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 	private Button mButtonToTime;
 	private EditText mEditTextNotes;
 	
+	private ImageButton mImageButtonReminderTime;
+	private ImageButton mImageButtonReminderLocation;
+	private ImageButton mImageButtonReminderDelete;
+	private LinearLayout mReminderTimeLayout;
+	private LinearLayout mReminderLocationLayout;
+	private Spinner mSpinnerReminderTimeTime;
+	private Spinner mSpinnerReminderTimeMethod;
+	
+	private int[] mReminderMinutes;
+	
 	private List<MQCalendar> mCalendars;
 	private Marker mNewEventMarker;
 	
@@ -84,6 +97,7 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 		
 		this.mActivity = (EditEventActivity) getActivity();
 		this.mActionBar = mActivity.getActionBar();
+		this.mReminderMinutes = mActivity.getResources().getIntArray(R.array.reminder_times);
 	}
 	
 	@Override
@@ -125,6 +139,14 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 		this.mButtonToTime = (Button) rootView.findViewById(R.id.edit_to_time);
 		this.mEditTextNotes = (EditText) rootView.findViewById(R.id.edit_notes);
 		
+		this.mImageButtonReminderTime = (ImageButton) rootView.findViewById(R.id.edit_reminder_time);
+		this.mImageButtonReminderLocation = (ImageButton) rootView.findViewById(R.id.edit_reminder_location);
+		this.mImageButtonReminderDelete = (ImageButton) rootView.findViewById(R.id.edit_reminder_delete);
+		this.mReminderTimeLayout = (LinearLayout) rootView.findViewById(R.id.edit_reminder_time_layout);
+		this.mReminderLocationLayout = (LinearLayout) rootView.findViewById(R.id.edit_reminder_location_layout);
+		this.mSpinnerReminderTimeTime = (Spinner) rootView.findViewById(R.id.edit_reminder_time_time);
+		this.mSpinnerReminderTimeMethod = (Spinner) rootView.findViewById(R.id.edit_reminder_time_method);
+		
 		return rootView;
 	}
 	
@@ -150,6 +172,9 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 			mEvent = mActivity.mEvent;
 			mEditMode = mActivity.mEditMode;
 			getLoaderManager().initLoader(1, null, EditEventFragment.this);
+			if (mEditMode && mEvent.isHasAlarm()) {
+				getLoaderManager().initLoader(2, null, EditEventFragment.this);
+			}
 		}
 		
 		mSpinnerCalendar.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -180,7 +205,6 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 		});
 		
 		mEditTextTitle.setText(mEvent.getTitle());
-//		mEditTextLocation.setText(mEvent.getAddressLine(mActivity));
 		mEditTextLocation.setText(mEvent.getLocation());
 		mButtonFromDate.setText(MQCalendarEvent.DATE_FORMAT_SHORT.format(mEvent.getDtStart()));
 		mButtonFromTime.setText(MQCalendarEvent.DATE_FORMAT_TIME.format(mEvent.getDtStart()));
@@ -213,6 +237,49 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 			}
 		});
 		
+		mImageButtonReminderTime.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				mReminderTimeLayout.setVisibility(View.VISIBLE);
+				mReminderLocationLayout.setVisibility(View.GONE);
+				mImageButtonReminderTime.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_time_activated));
+				mImageButtonReminderLocation.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_place));
+				mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+			}
+		});
+		
+		mImageButtonReminderLocation.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				mReminderTimeLayout.setVisibility(View.GONE);
+				mReminderLocationLayout.setVisibility(View.VISIBLE);
+				mImageButtonReminderTime.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_time));
+				mImageButtonReminderLocation.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_place_activated));
+				mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+			}
+		});
+		
+		mImageButtonReminderDelete.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				mReminderTimeLayout.setVisibility(View.GONE);
+				mReminderLocationLayout.setVisibility(View.GONE);
+				mImageButtonReminderTime.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_time));
+				mImageButtonReminderLocation.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_place));
+				mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+			}
+		});
+		
+		ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(mActivity, android.R.layout.simple_spinner_item);
+		adapterTime.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		adapterTime.addAll(mActivity.getResources().getStringArray(R.array.reminder_times_names));
+		mSpinnerReminderTimeTime.setAdapter(adapterTime);
+		
+		ArrayAdapter<String> adapterMethod = new ArrayAdapter<String>(mActivity, android.R.layout.simple_spinner_item);
+		adapterMethod.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		adapterMethod.addAll(mActivity.getResources().getStringArray(R.array.reminder_method_names));
+		mSpinnerReminderTimeMethod.setAdapter(adapterMethod);
+		
 		final GoogleMap gMap = mMapView.getMap();
 		if (gMap != null) {
 			gMap.setOnMapClickListener(new OnMapClickListener() {
@@ -235,6 +302,8 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        
+        getReminderFromUI();
         
         outState.putString(CALENDAR_ARGUMENT, new Gson().toJson(mEvent));
         outState.putBoolean(EDITMODE_ARGUMENT, mEditMode);
@@ -327,6 +396,42 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 		
 		mEvent.setDtEnd(calendar.getTimeInMillis());
 	}
+	
+	/**
+	 * Called after orientation change, and after onLoadFinished()
+	 */
+	private void setReminderToUI() {
+		if (false) {
+			// TODO: abfragen ob ein local reminder gespeichert wurde
+			// wenn ja, dann wird der local reminder gesetzt
+			
+		} else {
+			
+		}
+	}
+	
+	/**
+	 * Writes the reminder data from the UI into mEvent.
+	 * Called before orientation change, and before save()
+	 */
+	private void getReminderFromUI() {
+		MQReminder reminder = new MQReminder();
+		if (mReminderTimeLayout.getVisibility() == View.VISIBLE) {
+			
+			int pos = mSpinnerReminderTimeMethod.getSelectedItemPosition();
+			if (pos == 0) {
+//				reminder.setMethod(method);
+			} else if (pos == 1) {
+				
+				
+			}
+			
+		} else if (mReminderLocationLayout.getVisibility() == View.VISIBLE) {
+			
+		} else {
+			mEvent.setReminders(null);
+		}
+	}
 
 	@Override
 	public void onClick(View v) {
@@ -351,6 +456,8 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 		mEvent.setTitle(mEditTextTitle.getText().toString());
 		mEvent.setDescription(mEditTextNotes.getText().toString());
 		
+		getReminderFromUI();
+		
 		if (mEditMode) {
 			ProviderWrapper.updateEvent(mActivity, mEvent);
 		} else {
@@ -363,6 +470,8 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		if (id == 1) {
 			return CalendarProviderWrapper.getAllCalendars(mActivity);
+		} else if (id == 2) {
+			return CalendarProviderWrapper.getReminder(mActivity, mEvent.getID());
 		} else {
 			return null;
 		}
@@ -371,26 +480,37 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (loader != null) {
-			int pos = 0;
-			
-			mCalendars = new ArrayList<MQCalendar>();
-			if (cursor.getCount() > 0) {
-				while (cursor.moveToNext()) {
-					MQCalendar calendar = CursorTransformer.cursorToCalendar(cursor);
-					if (calendar != null) {
-						mCalendars.add(calendar);
-						if (mEvent != null) {
-							if (mEvent.getCalendarID() == calendar.getCalendarID()) {
-								pos = cursor.getPosition();
+			if (loader.getId() == 1) {
+				int pos = 0;
+				mCalendars = new ArrayList<MQCalendar>();
+				if (cursor.getCount() > 0) {
+					while (cursor.moveToNext()) {
+						MQCalendar calendar = CursorTransformer.cursorToCalendar(cursor);
+						if (calendar != null) {
+							mCalendars.add(calendar);
+							if (mEvent != null) {
+								if (mEvent.getCalendarID() == calendar.getCalendarID()) {
+									pos = cursor.getPosition();
+								}
 							}
 						}
 					}
 				}
+				CalendarAdapter adapter = new CalendarAdapter(mActivity, 0, mCalendars);
+				mSpinnerCalendar.setAdapter(adapter);
+				mSpinnerCalendar.setSelection(pos);
+			} else if (loader.getId() == 2) {
+				List<MQReminder> reminders = new ArrayList<MQReminder>();
+				if (cursor.getCount() > 0) {
+					while (cursor.moveToNext()) {
+						MQReminder reminder = CursorTransformer.cursorToReminder(cursor);
+						reminders.add(reminder);
+					}
+				}
+				mEvent.setReminders(reminders);
+				setReminderToUI();
 			}
-			
-			CalendarAdapter adapter = new CalendarAdapter(mActivity, 0, mCalendars);
-			mSpinnerCalendar.setAdapter(adapter);
-			mSpinnerCalendar.setSelection(pos);
+			cursor.close();
 		}
 	}
 

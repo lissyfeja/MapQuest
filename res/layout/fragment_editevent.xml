@@ -80,6 +80,7 @@
                     android:paddingTop="8dp" />
 
                 <!-- This view is neccessary for intercepting touchevents from the mapview -->
+
                 <ImageView
                     android:id="@+id/transparent_image"
                     android:layout_width="match_parent"
@@ -175,6 +176,8 @@
                 android:minHeight="48dp"
                 android:minLines="1" />
         </LinearLayout>
+
+        <include layout="@layout/fragment_editevent_reminder" />
     </LinearLayout>
 
 </ScrollView>
