@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.Locale;
 
 import com.google.android.gms.location.Geofence;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -30,10 +33,12 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,16 +54,17 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 	private MenuItem mMenuItemMap;
 	private MQCalendarEvent mNewEvent;
 	private List<MQCalendarEvent> mEvents = new ArrayList<MQCalendarEvent>();
-//	private List<Marker> mMarker = new ArrayList<Marker>();
 	private HashMap<Marker, Long> mMarker = new HashMap<Marker, Long>();
 	
 	
 	private SimpleGeofence mGeofence;
 	List<SimpleGeofence> mGeofenceList;
-	//private SimpleGeofenceStore mGeofenceStorage;
 	private boolean mRoutingMode;
 	private Geocoder mGeocoder;
 	private Marker mNewEventMarker;
+	
+	private Marker mUserPosition;
+	private MarkerOptions mUserMarkerOptions;
 	
 	private static final long SECONDS_PER_HOUR = 60;
     private static final long MILLISECONDS_PER_SECOND = 1000;
@@ -79,6 +85,27 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 		this.mActivity = (MainActivity) getActivity();
 		this.mActionBar = mActivity.getActionBar();
 		setHasOptionsMenu(true);
+		
+		mUserMarkerOptions = new MarkerOptions()
+			.icon(BitmapDescriptorFactory.fromResource(R.drawable.maps_marker))
+			.anchor(0.5f, 0.5f);
+		
+		mActivity.setMQLocationListener(new MQLocationListener() {
+			@Override
+			public void onUserLocationChanged(Location location) {
+				if (mUserPosition != null) {
+					mUserPosition.remove();
+				} else {
+					CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 10);
+					mMap.animateCamera(cameraUpdate);
+				}
+				
+				mUserPosition = mMap.addMarker(mUserMarkerOptions
+					.position(new LatLng(location.getLatitude(), location.getLongitude())));
+				
+			}
+		});
+		
 	}
 
 	@Override
@@ -196,12 +223,24 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.action_map_position:
+			if (mMap != null && mActivity.mLocationClient.isConnected()) {
+				Location location = mActivity.mLocationClient.getLastLocation();
+
+				if (mUserPosition != null) {
+					mUserPosition.remove();
+				}
+				CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12);
+				mMap.animateCamera(cameraUpdate);
+
+				mUserPosition = mMap.addMarker(mUserMarkerOptions.position(new LatLng(location.getLatitude(), location.getLongitude())));
+			}
+			return true;
 		case R.id.action_map_routing:
 			mMenuItemRouting.setVisible(false);
 			mMenuItemMap.setVisible(true);
 			mRoutingMode = true;
 			
-			// TODO: show our own position
 			// TODO: show routes from our position to first event to second event to third...
 			// TODO: (only if we have time) show split actionbar like in concept
 			
@@ -267,6 +306,7 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if (loader != null) {
 			if (loader.getId() == 0) {
+				mMap.clear();
 				if (cursor.getCount() > 0) {
 					while (cursor.moveToNext()) {
 						MQCalendarEvent event = CursorTransformer.cursorToEvent(cursor);
@@ -284,7 +324,7 @@ public class MQMapFragment extends SupportMapFragment implements LoaderManager.L
 								mMap.addCircle(mCircleOptions);
 							}
 							mEvents.add(event);
-
+							
 							List<Address> addresses = event.getAddresses(mActivity);
 							if (addresses != null && addresses.size() > 0) {
 								Marker marker = mMap.addMarker(new MarkerOptions()

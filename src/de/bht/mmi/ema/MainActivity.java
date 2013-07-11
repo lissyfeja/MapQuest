@@ -4,14 +4,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
+import android.location.Location;
 import android.os.Bundle;
 import android.content.Context;
 import android.os.Build;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.ArrayAdapter;
 
-public class MainActivity extends FragmentActivity implements ActionBar.OnNavigationListener {
+public class MainActivity extends GeofenceActivity implements ActionBar.OnNavigationListener {
 	/**
 	 * The serialization (saved instance state) Bundle key representing the
 	 * current dropdown position.
@@ -88,6 +88,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.OnNaviga
 			break;
 		}
 		return true;
+	}
+	
+	@Override
+	public void onLocationChanged(Location location) {
+		super.onLocationChanged(location);
+		// TODO Auto-generated method stub
 	}
 
 }
