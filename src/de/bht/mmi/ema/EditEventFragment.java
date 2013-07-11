@@ -27,11 +27,11 @@ import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.CalendarContract.Reminders;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -48,7 +48,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 public class EditEventFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, OnClickListener {
@@ -83,6 +86,10 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 	private LinearLayout mReminderLocationLayout;
 	private Spinner mSpinnerReminderTimeTime;
 	private Spinner mSpinnerReminderTimeMethod;
+	private SeekBar mSeekbarReminderLocationRadius;
+	private TextView mSeekbarReminderLocationRadiusValue;
+	private ImageButton mImageButtonReminderLocationEnter;
+	private ImageButton mImageButtonReminderLocationExit;
 	
 	private int[] mReminderMinutes;
 	
@@ -146,6 +153,10 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 		this.mReminderLocationLayout = (LinearLayout) rootView.findViewById(R.id.edit_reminder_location_layout);
 		this.mSpinnerReminderTimeTime = (Spinner) rootView.findViewById(R.id.edit_reminder_time_time);
 		this.mSpinnerReminderTimeMethod = (Spinner) rootView.findViewById(R.id.edit_reminder_time_method);
+		this.mSeekbarReminderLocationRadius = (SeekBar) rootView.findViewById(R.id.edit_reminder_location_radius);
+		this.mSeekbarReminderLocationRadiusValue = (TextView) rootView.findViewById(R.id.edit_reminder_location_radius_value);
+		this.mImageButtonReminderLocationEnter = (ImageButton) rootView.findViewById(R.id.edit_reminder_location_enter);
+		this.mImageButtonReminderLocationExit = (ImageButton) rootView.findViewById(R.id.edit_reminder_location_exit);
 		
 		return rootView;
 	}
@@ -168,6 +179,7 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 			getLoaderManager().restartLoader(1, null, EditEventFragment.this);
 			
 			mEditMode = savedInstanceState.getBoolean(EDITMODE_ARGUMENT);
+			setReminderToUI();
 		} else {
 			mEvent = mActivity.mEvent;
 			mEditMode = mActivity.mEditMode;
@@ -240,10 +252,7 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 		mImageButtonReminderTime.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				mReminderTimeLayout.setVisibility(View.VISIBLE);
-				mReminderLocationLayout.setVisibility(View.GONE);
-				mImageButtonReminderTime.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_time_activated));
-				mImageButtonReminderLocation.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_place));
+				activateReminderTime();
 				mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
 			}
 		});
@@ -251,10 +260,23 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 		mImageButtonReminderLocation.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				mReminderTimeLayout.setVisibility(View.GONE);
-				mReminderLocationLayout.setVisibility(View.VISIBLE);
-				mImageButtonReminderTime.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_time));
-				mImageButtonReminderLocation.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_place_activated));
+				activateReminderLocation();
+				mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+			}
+		});
+		
+		mImageButtonReminderLocationEnter.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				activateReminderLocationEnter();
+				mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+			}
+		});
+		
+		mImageButtonReminderLocationExit.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				activateReminderLocationExit();
 				mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
 			}
 		});
@@ -267,6 +289,21 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 				mImageButtonReminderTime.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_time));
 				mImageButtonReminderLocation.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_place));
 				mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+			}
+		});
+		
+		mSeekbarReminderLocationRadius.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				mSeekbarReminderLocationRadiusValue.setText(Integer.toString(progress) + " m");
+			}
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				
+			}
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				
 			}
 		});
 		
@@ -397,16 +434,63 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 		mEvent.setDtEnd(calendar.getTimeInMillis());
 	}
 	
+	private void activateReminderTime() {
+		mReminderTimeLayout.setVisibility(View.VISIBLE);
+		mReminderLocationLayout.setVisibility(View.GONE);
+		mImageButtonReminderTime.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_time_activated));
+		mImageButtonReminderLocation.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_place));
+	}
+	
+	private void activateReminderLocation() {
+		mReminderTimeLayout.setVisibility(View.GONE);
+		mReminderLocationLayout.setVisibility(View.VISIBLE);
+		mImageButtonReminderTime.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_time));
+		mImageButtonReminderLocation.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_place_activated));
+	}
+	
+	private void activateReminderLocationEnter() {
+		mImageButtonReminderLocationEnter.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_geofence_enter_activated));
+		mImageButtonReminderLocationExit.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_geofence_exit));
+	}
+	private void activateReminderLocationExit() {
+		mImageButtonReminderLocationEnter.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_geofence_enter));
+		mImageButtonReminderLocationExit.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_geofence_exit_activated));
+	}
+	
 	/**
+	 * Writes the reminder data from mEvent to the UI-elements.
 	 * Called after orientation change, and after onLoadFinished()
 	 */
 	private void setReminderToUI() {
-		if (false) {
-			// TODO: abfragen ob ein local reminder gespeichert wurde
-			// wenn ja, dann wird der local reminder gesetzt
-			
-		} else {
-			
+		List<MQReminder> reminders = mEvent.getReminders();
+		if (reminders != null && reminders.size() > 0) {
+			MQReminder reminder = reminders.get(0);
+			if (false) {
+				activateReminderLocation();
+				// TODO: abfragen ob ein local reminder gespeichert wurde
+				// wenn ja, dann wird der local reminder gesetzt
+
+			} else {
+				activateReminderTime();
+				int minute = reminder.getMinutes();
+				int bestMinute = 200;
+				int bestPos = 0;
+				for (int i = 0; i < mReminderMinutes.length; i++) {
+					if (Math.abs(minute - mReminderMinutes[i]) < Math.abs(minute - bestMinute)) {
+						bestMinute = mReminderMinutes[i];
+						bestPos = i;
+					}
+				}
+				mSpinnerReminderTimeTime.setSelection(bestPos);
+				
+				String method = reminder.getMethod();
+				if (method.equals(Integer.toString(Reminders.METHOD_ALERT))) {
+					mSpinnerReminderTimeMethod.setSelection(0);
+				} else if (method.equals(Integer.toString(Reminders.METHOD_EMAIL))) {
+					mSpinnerReminderTimeMethod.setSelection(1);
+				}
+
+			}
 		}
 	}
 	
@@ -415,18 +499,29 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 	 * Called before orientation change, and before save()
 	 */
 	private void getReminderFromUI() {
-		MQReminder reminder = new MQReminder();
+		MQReminder reminder;
+		if (mEvent.isHasAlarm()) {
+			reminder = mEvent.getReminders().get(0);
+		} else {
+			reminder = new MQReminder();
+		}
+		
 		if (mReminderTimeLayout.getVisibility() == View.VISIBLE) {
+			int time = mSpinnerReminderTimeTime.getSelectedItemPosition();
+			reminder.setMinutes(mReminderMinutes[time]);
 			
-			int pos = mSpinnerReminderTimeMethod.getSelectedItemPosition();
-			if (pos == 0) {
-//				reminder.setMethod(method);
-			} else if (pos == 1) {
-				
-				
+			int method = mSpinnerReminderTimeMethod.getSelectedItemPosition();
+			if (method == 0) {
+				reminder.setMethod(Integer.toString(Reminders.METHOD_ALERT));
+			} else if (method == 1) {
+				reminder.setMethod(Integer.toString(Reminders.METHOD_EMAIL));
 			}
-			
+			List<MQReminder> reminders = new ArrayList<MQReminder>();
+			reminders.add(reminder);
+			mEvent.setReminders(reminders);
 		} else if (mReminderLocationLayout.getVisibility() == View.VISIBLE) {
+			
+			//TODO: location reminder
 			
 		} else {
 			mEvent.setReminders(null);

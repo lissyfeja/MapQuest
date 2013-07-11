@@ -48,6 +48,7 @@ public class MQCalendarEvent {
 	private boolean hasAlarm;
 	
 	private List<MQReminder> reminders;
+	private long reminderToDelete;
 
 	
 	
@@ -200,6 +201,9 @@ public class MQCalendarEvent {
 
 	public void setReminders(List<MQReminder> reminders) {
 		if (reminders == null) {
+			if (this.reminders != null) {
+				this.reminderToDelete = this.reminders.get(0).getID();
+			}
 			this.hasAlarm = false;
 		} else {
 			this.hasAlarm = true;
@@ -209,6 +213,10 @@ public class MQCalendarEvent {
 	
 	public List<MQReminder> getReminders() {
 		return reminders;
+	}
+	
+	public long getReminderToDelete() {
+		return this.reminderToDelete;
 	}
 
 }

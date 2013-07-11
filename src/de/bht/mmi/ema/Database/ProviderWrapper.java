@@ -73,15 +73,22 @@ public class ProviderWrapper {
 				
 				int rows = context.getContentResolver().update(updateUri, values, null, null);
 				
-				if (rows > 0 && event.isHasAlarm()) {
-					MQReminder reminder = event.getReminders().get(0);
-					ContentValues reminderValues = CursorTransformer.reminderToValues(reminder);
-		            
-		            Uri reminderUpdateUri = ContentUris.withAppendedId(Reminders.CONTENT_URI, reminder.getID());
-		            
-		            int reminderRows = context.getContentResolver().update(reminderUpdateUri, reminderValues, null, null);
-		            
-		          //TODO: update local reminder
+				if (rows > 0) {
+					if (event.isHasAlarm()) {
+						MQReminder reminder = event.getReminders().get(0);
+						ContentValues reminderValues = CursorTransformer.reminderToValues(reminder);
+
+						Uri reminderUpdateUri = ContentUris.withAppendedId(Reminders.CONTENT_URI, reminder.getID());
+
+						int reminderRows = context.getContentResolver().update(reminderUpdateUri, reminderValues, null, null);
+						
+//						TODO: update local reminder
+					} else {
+						// try to delete reminder
+						long id = event.getReminderToDelete();
+						Uri reminderDeleteUri = ContentUris.withAppendedId(Reminders.CONTENT_URI, id);
+						int deletedRows = context.getContentResolver().delete(reminderDeleteUri, null, null);
+					}
 				}
 			}
 		}).start();
