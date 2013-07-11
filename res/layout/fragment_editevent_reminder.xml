@@ -29,6 +29,158 @@
         android:paddingRight="8dp" >
 
         <LinearLayout
+            android:id="@+id/edit_reminder_time_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <ImageButton
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:background="#00000000"
+                    android:clickable="false"
+                    android:src="@drawable/ic_action_time_activated" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical" >
+
+                    <Spinner
+                        android:id="@+id/edit_reminder_time_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp" />
+
+                    <Spinner
+                        android:id="@+id/edit_reminder_time_method"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/edit_reminder_time_delete"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/selectable_background_mapquest"
+                    android:src="@drawable/ic_action_cancel_light" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="#33333333" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/edit_reminder_location_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <ImageButton
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:background="#00000000"
+                    android:clickable="false"
+                    android:src="@drawable/ic_action_place_activated" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical" >
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:gravity="center_vertical" >
+
+                        <TextView
+                            android:id="@+id/edit_reminder_location_radius_value"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="-4dp"
+                            android:paddingLeft="20dp"
+                            android:singleLine="true"
+                            android:text="1000 m"
+                            android:textColor="#FF33b5e5"
+                            android:textIsSelectable="false"
+                            android:textSize="12sp" />
+
+                        <SeekBar
+                            android:id="@+id/edit_reminder_location_radius"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:max="5000"
+                            android:progress="1000" />
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:orientation="horizontal" >
+
+                        <ImageButton
+                            android:id="@+id/edit_reminder_location_enter"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/selectable_background_mapquest"
+                            android:gravity="center_vertical"
+                            android:src="@drawable/ic_action_geofence_enter_activated" />
+
+                        <View
+                            android:layout_width="0.5dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="12dp"
+                            android:layout_marginTop="12dp"
+                            android:background="#33333333" />
+
+                        <ImageButton
+                            android:id="@+id/edit_reminder_location_exit"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/selectable_background_mapquest"
+                            android:gravity="center_vertical"
+                            android:src="@drawable/ic_action_geofence_exit" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/edit_reminder_location_delete"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/selectable_background_mapquest"
+                    android:src="@drawable/ic_action_cancel_light" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="#33333333" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:orientation="horizontal" >
@@ -43,6 +195,7 @@
                 android:src="@drawable/ic_action_time" />
 
             <View
+                android:id="@+id/edit_reminder_divider"
                 android:layout_width="0.5dp"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="12dp"
@@ -57,111 +210,6 @@
                 android:background="@drawable/selectable_background_mapquest"
                 android:gravity="center_vertical"
                 android:src="@drawable/ic_action_place" />
-
-            <View
-                android:layout_width="0.5dp"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="12dp"
-                android:layout_marginTop="12dp"
-                android:background="#33333333" />
-
-            <ImageButton
-                android:id="@+id/edit_reminder_delete"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/selectable_background_mapquest"
-                android:gravity="center_vertical"
-                android:src="@drawable/ic_action_cancel_light" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
-            android:background="#33333333" />
-
-        <LinearLayout
-            android:id="@+id/edit_reminder_time_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone" >
-
-            <Spinner
-                android:id="@+id/edit_reminder_time_time"
-                android:layout_width="match_parent"
-                android:layout_height="48dp" />
-
-            <Spinner
-                android:id="@+id/edit_reminder_time_method"
-                android:layout_width="match_parent"
-                android:layout_height="48dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/edit_reminder_location_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone" >
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:gravity="center_vertical" >
-
-                <TextView
-                    android:id="@+id/edit_reminder_location_radius_value"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="-4dp"
-                    android:paddingLeft="20dp"
-                    android:singleLine="true"
-                    android:text="1000 m"
-                    android:textColor="#FF33b5e5"
-                    android:textIsSelectable="false"
-                    android:textSize="12sp" />
-
-                <SeekBar
-                    android:id="@+id/edit_reminder_location_radius"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:max="5000"
-                    android:progress="1000" />
-            </RelativeLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal" >
-
-                <ImageButton
-                    android:id="@+id/edit_reminder_location_enter"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/selectable_background_mapquest"
-                    android:gravity="center_vertical"
-                    android:src="@drawable/ic_action_geofence_enter_activated" />
-
-                <View
-                    android:layout_width="0.5dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="12dp"
-                    android:layout_marginTop="12dp"
-                    android:background="#33333333" />
-
-                <ImageButton
-                    android:id="@+id/edit_reminder_location_exit"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/selectable_background_mapquest"
-                    android:gravity="center_vertical"
-                    android:src="@drawable/ic_action_geofence_exit" />
-            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

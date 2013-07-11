@@ -8,6 +8,8 @@ import java.util.Locale;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import de.bht.mmi.ema.Geofence.SimpleGeofence;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -49,6 +51,9 @@ public class MQCalendarEvent {
 	
 	private List<MQReminder> reminders;
 	private long reminderToDelete;
+	
+	private SimpleGeofence geofenceReminder;
+	private String geofenceReminderToDelete;
 
 	
 	
@@ -201,11 +206,12 @@ public class MQCalendarEvent {
 
 	public void setReminders(List<MQReminder> reminders) {
 		if (reminders == null) {
-			if (this.reminders != null) {
+			if (this.reminders != null && this.reminders.size() > 0) {
 				this.reminderToDelete = this.reminders.get(0).getID();
 			}
 			this.hasAlarm = false;
 		} else {
+//			setGeofenceReminder(null);
 			this.hasAlarm = true;
 		}
 		this.reminders = reminders;
@@ -217,6 +223,27 @@ public class MQCalendarEvent {
 	
 	public long getReminderToDelete() {
 		return this.reminderToDelete;
+	}
+
+	public void setGeofenceReminder(SimpleGeofence geofenceReminder) {
+		if (geofenceReminder == null) {
+			if (this.geofenceReminder != null) {
+				this.geofenceReminderToDelete = this.geofenceReminder.getId();
+			}
+//			this.hasAlarm = false;
+		} else {
+//			setReminders(null);
+//			this.hasAlarm = true;
+		}
+		this.geofenceReminder = geofenceReminder;
+	}
+
+	public SimpleGeofence getGeofenceReminder() {
+		return geofenceReminder;
+	}
+
+	public String getGeofenceReminderToDelete() {
+		return geofenceReminderToDelete;
 	}
 
 }

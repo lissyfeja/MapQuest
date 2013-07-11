@@ -1,9 +1,11 @@
 package de.bht.mmi.ema.data;
 
 import java.util.Calendar;
+import java.util.List;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Build;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Events;
@@ -63,7 +65,7 @@ public class CalendarProviderWrapper {
 	}
 	
 	private static CursorLoader getEvents(final Context context, String selection, String[] selectionArgs) {
-		String s = Events.TITLE + " IS NOT null";
+		String s = "(" + Events.TITLE + " IS NOT null) AND (" + Events.DELETED + " != 1)";
 		if (selection != null) {
 			s += " AND " + selection;
 		}
@@ -77,7 +79,6 @@ public class CalendarProviderWrapper {
 		
 		return new CursorLoader(context, CalendarContract.Reminders.CONTENT_URI, MQReminder.FIELDS, selection, selectionArgs, null);
 	}
-	
 	
 	
 //	private static CursorLoader getInstances(final Context context, long from, long to) {

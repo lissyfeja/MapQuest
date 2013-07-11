@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import com.google.android.gms.location.Geofence;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.MapView;
@@ -14,18 +15,23 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
 import de.bht.mmi.ema.Database.ProviderWrapper;
+import de.bht.mmi.ema.Geofence.SimpleGeofence;
+import de.bht.mmi.ema.Geofence.SimpleGeofenceStore;
 import de.bht.mmi.ema.Views.CalendarAdapter;
 import de.bht.mmi.ema.data.CalendarProviderWrapper;
 import de.bht.mmi.ema.data.CursorTransformer;
 import de.bht.mmi.ema.data.MQCalendar;
 import de.bht.mmi.ema.data.MQCalendarEvent;
 import de.bht.mmi.ema.data.MQReminder;
+import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.database.Cursor;
+import android.location.Address;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract.Reminders;
 import android.support.v4.app.Fragment;
@@ -81,7 +87,9 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 	
 	private ImageButton mImageButtonReminderTime;
 	private ImageButton mImageButtonReminderLocation;
-	private ImageButton mImageButtonReminderDelete;
+	private ImageButton mImageButtonReminderTimeDelete;
+	private ImageButton mImageButtonReminderLocationDelete;
+	private View mEditReminderDivider;
 	private LinearLayout mReminderTimeLayout;
 	private LinearLayout mReminderLocationLayout;
 	private Spinner mSpinnerReminderTimeTime;
@@ -92,6 +100,7 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 	private ImageButton mImageButtonReminderLocationExit;
 	
 	private int[] mReminderMinutes;
+	private boolean mEnterGeofence = true;
 	
 	private List<MQCalendar> mCalendars;
 	private Marker mNewEventMarker;
@@ -148,7 +157,9 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 		
 		this.mImageButtonReminderTime = (ImageButton) rootView.findViewById(R.id.edit_reminder_time);
 		this.mImageButtonReminderLocation = (ImageButton) rootView.findViewById(R.id.edit_reminder_location);
-		this.mImageButtonReminderDelete = (ImageButton) rootView.findViewById(R.id.edit_reminder_delete);
+		this.mImageButtonReminderTimeDelete = (ImageButton) rootView.findViewById(R.id.edit_reminder_time_delete);
+		this.mImageButtonReminderLocationDelete = (ImageButton) rootView.findViewById(R.id.edit_reminder_location_delete);
+		this.mEditReminderDivider = (View) rootView.findViewById(R.id.edit_reminder_divider);
 		this.mReminderTimeLayout = (LinearLayout) rootView.findViewById(R.id.edit_reminder_time_layout);
 		this.mReminderLocationLayout = (LinearLayout) rootView.findViewById(R.id.edit_reminder_location_layout);
 		this.mSpinnerReminderTimeTime = (Spinner) rootView.findViewById(R.id.edit_reminder_time_time);
@@ -184,7 +195,7 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 			mEvent = mActivity.mEvent;
 			mEditMode = mActivity.mEditMode;
 			getLoaderManager().initLoader(1, null, EditEventFragment.this);
-			if (mEditMode && mEvent.isHasAlarm()) {
+			if (mEditMode) {
 				getLoaderManager().initLoader(2, null, EditEventFragment.this);
 			}
 		}
@@ -253,6 +264,7 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 			@Override
 			public void onClick(View view) {
 				activateReminderTime();
+
 				mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
 			}
 		});
@@ -261,6 +273,7 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 			@Override
 			public void onClick(View view) {
 				activateReminderLocation();
+
 				mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
 			}
 		});
@@ -281,13 +294,26 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 			}
 		});
 		
-		mImageButtonReminderDelete.setOnClickListener(new OnClickListener() {
+		mImageButtonReminderTimeDelete.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				mReminderTimeLayout.setVisibility(View.GONE);
+				mImageButtonReminderTime.setVisibility(View.VISIBLE);
+				if (mImageButtonReminderLocation.getVisibility() == View.VISIBLE) {
+					mEditReminderDivider.setVisibility(View.VISIBLE);
+				}
+				mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+			}
+		});
+		
+		mImageButtonReminderLocationDelete.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
 				mReminderLocationLayout.setVisibility(View.GONE);
-				mImageButtonReminderTime.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_time));
-				mImageButtonReminderLocation.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_place));
+				mImageButtonReminderLocation.setVisibility(View.VISIBLE);
+				if (mImageButtonReminderTime.getVisibility() == View.VISIBLE) {
+					mEditReminderDivider.setVisibility(View.VISIBLE);
+				}
 				mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
 			}
 		});
@@ -436,25 +462,29 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 	
 	private void activateReminderTime() {
 		mReminderTimeLayout.setVisibility(View.VISIBLE);
-		mReminderLocationLayout.setVisibility(View.GONE);
-		mImageButtonReminderTime.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_time_activated));
-		mImageButtonReminderLocation.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_place));
+		mImageButtonReminderTime.setVisibility(View.GONE);
+		if (mImageButtonReminderLocation.getVisibility() == View.VISIBLE) {
+			mEditReminderDivider.setVisibility(View.GONE);
+		}
 	}
 	
 	private void activateReminderLocation() {
-		mReminderTimeLayout.setVisibility(View.GONE);
 		mReminderLocationLayout.setVisibility(View.VISIBLE);
-		mImageButtonReminderTime.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_time));
-		mImageButtonReminderLocation.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_place_activated));
+		mImageButtonReminderLocation.setVisibility(View.GONE);
+		if (mImageButtonReminderTime.getVisibility() == View.VISIBLE) {
+			mEditReminderDivider.setVisibility(View.GONE);
+		}
 	}
 	
 	private void activateReminderLocationEnter() {
 		mImageButtonReminderLocationEnter.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_geofence_enter_activated));
 		mImageButtonReminderLocationExit.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_geofence_exit));
+		mEnterGeofence = true;
 	}
 	private void activateReminderLocationExit() {
 		mImageButtonReminderLocationEnter.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_geofence_enter));
 		mImageButtonReminderLocationExit.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_action_geofence_exit_activated));
+		mEnterGeofence = false;
 	}
 	
 	/**
@@ -463,33 +493,39 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 	 */
 	private void setReminderToUI() {
 		List<MQReminder> reminders = mEvent.getReminders();
+		SimpleGeofence geofence = mEvent.getGeofenceReminder();
+		
 		if (reminders != null && reminders.size() > 0) {
 			MQReminder reminder = reminders.get(0);
-			if (false) {
-				activateReminderLocation();
-				// TODO: abfragen ob ein local reminder gespeichert wurde
-				// wenn ja, dann wird der local reminder gesetzt
-
-			} else {
-				activateReminderTime();
-				int minute = reminder.getMinutes();
-				int bestMinute = 200;
-				int bestPos = 0;
-				for (int i = 0; i < mReminderMinutes.length; i++) {
-					if (Math.abs(minute - mReminderMinutes[i]) < Math.abs(minute - bestMinute)) {
-						bestMinute = mReminderMinutes[i];
-						bestPos = i;
-					}
+			activateReminderTime();
+			int minute = reminder.getMinutes();
+			int bestMinute = 200;
+			int bestPos = 0;
+			for (int i = 0; i < mReminderMinutes.length; i++) {
+				if (Math.abs(minute - mReminderMinutes[i]) < Math.abs(minute - bestMinute)) {
+					bestMinute = mReminderMinutes[i];
+					bestPos = i;
 				}
-				mSpinnerReminderTimeTime.setSelection(bestPos);
-				
-				String method = reminder.getMethod();
-				if (method.equals(Integer.toString(Reminders.METHOD_ALERT))) {
-					mSpinnerReminderTimeMethod.setSelection(0);
-				} else if (method.equals(Integer.toString(Reminders.METHOD_EMAIL))) {
-					mSpinnerReminderTimeMethod.setSelection(1);
-				}
+			}
+			mSpinnerReminderTimeTime.setSelection(bestPos);
 
+			String method = reminder.getMethod();
+			if (method.equals(Integer.toString(Reminders.METHOD_ALERT))) {
+				mSpinnerReminderTimeMethod.setSelection(0);
+			} else if (method.equals(Integer.toString(Reminders.METHOD_EMAIL))) {
+				mSpinnerReminderTimeMethod.setSelection(1);
+			}
+		}
+		if (geofence != null) {
+			activateReminderLocation();
+			
+			int radius = (int) geofence.getRadius();
+			mSeekbarReminderLocationRadius.setProgress(radius);
+			int transitionType = geofence.getTransitionType();
+			if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER) {
+				activateReminderLocationEnter();
+			} else if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
+				activateReminderLocationExit();
 			}
 		}
 	}
@@ -498,9 +534,10 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 	 * Writes the reminder data from the UI into mEvent.
 	 * Called before orientation change, and before save()
 	 */
+	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	private void getReminderFromUI() {
 		MQReminder reminder;
-		if (mEvent.isHasAlarm()) {
+		if (mEvent.getReminders() != null && mEvent.getReminders().size() > 0) {
 			reminder = mEvent.getReminders().get(0);
 		} else {
 			reminder = new MQReminder();
@@ -519,12 +556,35 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 			List<MQReminder> reminders = new ArrayList<MQReminder>();
 			reminders.add(reminder);
 			mEvent.setReminders(reminders);
-		} else if (mReminderLocationLayout.getVisibility() == View.VISIBLE) {
-			
-			//TODO: location reminder
-			
 		} else {
 			mEvent.setReminders(null);
+		}
+		
+		if (mReminderLocationLayout.getVisibility() == View.VISIBLE) {
+			String id = Long.toString(mEvent.getID());
+			int radius = mSeekbarReminderLocationRadius.getProgress();
+			long expirationTime = Geofence.NEVER_EXPIRE;
+			
+			double lat = 0;
+			double lon = 0;
+			List<Address> addresses = mEvent.getAddresses(mActivity);
+			if (addresses != null && addresses.size() > 0) {
+				Address add = addresses.get(0);
+				lat = add.getLatitude();
+				lon = add.getLongitude();
+			}
+			
+			int transitionType = 0;
+			if (mEnterGeofence) {
+				transitionType = Geofence.GEOFENCE_TRANSITION_ENTER;
+			} else {
+				transitionType = Geofence.GEOFENCE_TRANSITION_EXIT;
+			}
+			
+			SimpleGeofence geofence = new SimpleGeofence(id, lat, lon, radius, expirationTime, transitionType);
+			mEvent.setGeofenceReminder(geofence);
+		} else {
+			mEvent.setGeofenceReminder(null);
 		}
 	}
 
@@ -550,6 +610,12 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 	public boolean save() {
 		mEvent.setTitle(mEditTextTitle.getText().toString());
 		mEvent.setDescription(mEditTextNotes.getText().toString());
+		if (mEvent.getLocation() == null) {
+			String add = mEditTextLocation.getText().toString();
+			if (add != null && !add.equals("")) {
+				mEvent.setLocation(add);
+			}
+		}
 		
 		getReminderFromUI();
 		
@@ -600,9 +666,19 @@ public class EditEventFragment extends Fragment implements LoaderManager.LoaderC
 					while (cursor.moveToNext()) {
 						MQReminder reminder = CursorTransformer.cursorToReminder(cursor);
 						reminders.add(reminder);
+						mEvent.setHasAlarm(true);
 					}
 				}
 				mEvent.setReminders(reminders);
+
+				// is there a geofenceReminder?
+				SimpleGeofenceStore store = new SimpleGeofenceStore(mActivity);
+				SimpleGeofence geofence = store.getGeofence(Long.toString(mEvent.getID()));
+				if (geofence != null) {
+					mEvent.setGeofenceReminder(geofence);
+					mEvent.setHasAlarm(true);
+				}
+
 				setReminderToUI();
 			}
 			cursor.close();
